@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class BacktestCore(object):
 
     def __init__(self, data, init_amount, ptc, amount_symbol='$', unit_symbol='BTC', verbose=False):
@@ -53,7 +54,7 @@ class BacktestCore(object):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv('daily_data.csv')
+    data = pd.read_csv('data/daily_data.csv')
     data = data.set_index('Datetime')
     back_tester = BacktestCore(data=data, init_amount=10000, ptc=0.0, verbose=True)
 

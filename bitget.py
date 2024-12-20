@@ -167,7 +167,7 @@ class BitgetTrader:
 
 bgTrader = BitgetTrader()
 now = datetime.now(tz=timezone.utc)
-since = now - timedelta(weeks=52*5)
+since = now - timedelta(weeks=12)
 # since = now - timedelta(days=1)
 start_timestamp = int(since.timestamp() * 1000)
 
@@ -179,7 +179,7 @@ print('Processing...')
 try:
     bgTrader.fetch_ohcl(timeframe='1m',
                         start=start_timestamp,
-                        file="daily_data.csv")
+                        file="data/daily_data.csv")
 except Exception as e:
     print(e)
 
@@ -195,7 +195,7 @@ elapsed_time = round((t_1 - t_0), 3)
 print(f"Elapsed time: {elapsed_time} s")
 
 
-df = pd.read_csv('daily_data.csv')
+df = pd.read_csv('data/daily_data.csv')
 print(df.columns)
 print(df.index)
 print(df.tail())
