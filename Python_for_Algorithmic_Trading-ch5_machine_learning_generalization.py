@@ -6,7 +6,7 @@ import SMAVectorBacktester as SMA
 import matplotlib.pyplot as plt
 import yfinance as yf
 
-data = pd.read_csv('daily_data1.csv')
+data = pd.read_csv('data/daily_data_2.csv')
 data = data.set_index('Datetime')
 print(data.shape)
 
@@ -31,8 +31,8 @@ end_out = '2024-11-30'
 #print(str(data.index[-1][:10]))
 
 
-scibt = SCI.ScikitVectorBacktester('Close', start_in, end_out, 10000, 0.001, 'logistic', raw_data=data.copy())
-print(scibt.run_strategy(start_in, end_in, start_out, end_out, lags=200))
+scibt = SCI.ScikitVectorBacktester('Close', start_in, end_out, 10000, 0.00, 'logistic', raw_data=data.copy())
+print(scibt.run_strategy(start_in, end_in, start_out, end_out, lags=15))
 
 scibt.plot_results()
 plt.show()

@@ -5,7 +5,7 @@ import numpy as np
 import SMAVectorBacktester as SMA
 import matplotlib.pyplot as plt
 
-data = pd.read_csv('daily_data1.csv')
+data = pd.read_csv('data/daily_data.csv')
 data = data.set_index('Datetime')
 
 data = data[['Close']]

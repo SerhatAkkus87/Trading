@@ -1,5 +1,5 @@
 import pandas as pd
-
+from tabulate import tabulate
 
 class BacktestCore(object):
 
@@ -48,8 +48,8 @@ class BacktestCore(object):
         u = self.str_format_u.format(round(self.units, 4))
         a = self.str_format_a.format(round(self.amount, 2))
 
-        print(f"Amount:\t{a} {self.amount_symbol}")
-        print(f"Units: \t{u} {self.unit_symbol}")
+        print()
+        print(tabulate([[self.amount_symbol, a], [self.unit_symbol, u]], headers=['Asset', 'Amount']))
         print()
 
 
