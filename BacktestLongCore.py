@@ -6,6 +6,10 @@ import numpy as np
 from warnings import simplefilter
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 from ta import trend, utils, volume, volatility, momentum
+from PatternPy.tradingpatterns import tradingpatterns
+
+import warnings
+warnings.filterwarnings('ignore')
 
 class BacktestLongCore:
     def __init__(self, backtest_core: btc):
@@ -96,6 +100,37 @@ class BacktestLongCore:
         #
         # print(df['return'].describe())
 
+    def run_rolling_window_strategy2(self, window_size=4):
+        df = self.backtestCore.data
+
+        # Predicting Future Returns
+        df['return'] = np.log(df['Close'] / df['Close'].shift(1))
+        df.dropna(inplace=True)
+
+        df['prediction'] = 0
+
+        for i in range(len(df) - window_size):
+            df_train = df[i:i + window_size]
+            df_train = tradingpatterns.detect_head_shoulder(df_train)
+            df_train.loc[:, 'Head and Shoulder'] = df_train.loc[:, 'head_shoulder_pattern'].astype('object') == 'Head and Shoulder'
+            df_train.loc[:, 'Inverse Head and Shoulder'] = df_train.loc[:, 'head_shoulder_pattern'].astype('object') == 'Inverse Head and Shoulder'
+
+            if df_train['Head and Shoulder'].iloc[-2]:
+                pred = -1
+            elif df_train['Inverse Head and Shoulder'].iloc[-2]:
+                pred = 1
+            else:
+                pred = 0
+
+            df.loc[df_train.index[-1], 'prediction'] = pred
+
+            if pred == 1 and self.position == 0:
+                self.go_long(date_index=df_train.index[-1])
+            elif pred == -1 and self.position == 1:
+                self.go_short(date_index=df_train.index[-1])
+
+        df['prediction'].value_counts().plot(kind='barh')
+        plt.show()
 
 def test_strategy(x):
     return 1 if x < 102060 else 0
@@ -115,12 +150,13 @@ def threshold_strategy(df, threshold=0):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv('data/daily_data_2.csv')
+    data = pd.read_csv('data/daily_data.csv')
     data = data.set_index('Datetime')
+    data = data['2024-12-01':]
     print("Start...")
-    #back_tester = btc.BacktestCore(data=data, init_amount=10000, ptc=0.0, verbose=True)
+    back_tester = btc.BacktestCore(data=data, init_amount=10000, ptc=0.0, verbose=True)
 
-    #back_tester_long = BacktestLongCore(backtest_core=back_tester)
-    threshold_strategy(data)
-    #back_tester_long.run_rolling_window_strategy()
-    #back_tester_long.backtestCore.print_asset_info()
+    back_tester_long = BacktestLongCore(backtest_core=back_tester)
+    #threshold_strategy(data)
+    back_tester_long.run_rolling_window_strategy2()
+    back_tester_long.backtestCore.print_asset_info()
